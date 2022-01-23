@@ -3,11 +3,14 @@ class InjectorStorage {
     private dependencyServers: {[key: string]: any} = {};
 
     public pushController(name: string) {
-        this.controllers[this.stripName(name)] = {};
+        const stripped = this.stripName(name);
+        if (!(stripped in this.controllers)) {
+            this.controllers[this.stripName(name)] = {};
+        }
     }
 
     public addMethod(controller: string, method: string, props: Arguments[]) {
-        this.controllers[this.stripName(controller)][method] = props;
+        this.controllers[this.stripName(controller)][method.trim()] = props;
     }
 
     public getDependencies(controller: string, method: string): Arguments[] {

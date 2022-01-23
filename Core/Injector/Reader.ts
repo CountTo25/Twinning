@@ -25,7 +25,7 @@ export class Reader {
                     InjectorStorage.pushController(this.filename);
                     const parsedArguments = args.split(',').map((a, i) => {
                         const split = a.split(':');
-                        return {id: i, name: split[0], class: split[1].trim()}
+                        return {id: i, name: split[0].trim(), class: split[1].trim()}
                     })
                     InjectorStorage.addMethod(this.filename, method, parsedArguments);
                 }

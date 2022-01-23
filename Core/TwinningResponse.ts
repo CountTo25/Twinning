@@ -6,6 +6,7 @@ export default class TwinningResponse {
     private __vanilla!: ServerResponse;
     private __request!: TwinningRequest;
     public route: string = '';
+    private responsePayload: any = null;
 
 
     public static async fromHttp(vanilla: ServerResponse): Promise<TwinningResponse>
@@ -23,10 +24,11 @@ export default class TwinningResponse {
         this.__request = tr;
     }
 
+    public setResponsePayload(payload: any) {
+        this.responsePayload = payload;
+    }
 
-    public json(toShow: object | any[]): void
-    {
-        this.__vanilla.setHeader('content-type', 'application/json');
-        this.__vanilla.write(JSON.stringify(toShow));
+    public getResponsePayload() {
+        return this.responsePayload;
     }
 }

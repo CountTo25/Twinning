@@ -4,7 +4,7 @@
  */
 
 import { bindSessionId, findRoute, parseData } from "../Core/Server/RequestPipes";
-import { end, executeAction } from "../Core/Server/ResponsePipes";
+import { end, executeAction, setContent } from "../Core/Server/ResponsePipes";
 
 
 export const pipeRequestsTrough = [
@@ -18,5 +18,6 @@ export const pipeRequestsTrough = [
 
 export const pipeResponseTrough = [
     executeAction,
+    setContent,
     end, //response ends here
 ]

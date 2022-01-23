@@ -6,6 +6,7 @@ import TwinningResponse from "../Core/TwinningResponse";
 export default class Hello extends Controller {
     public sayHi() {
         console.log('wow!')
+        return {'wow': 'nice'}
     }
 
     public doSomething(name: string)
@@ -15,9 +16,11 @@ export default class Hello extends Controller {
 
     public somethingElse(response: TwinningResponse, request: TwinningRequest, r: TwinningWelcome)
     {
-        const content = request.content;
-        console.log(content.meme);
-        console.log(r.text);
-        response.json({'success': 'json!'});
+        console.log(r);
+        return {'success': 'true'}
+    }
+
+    public withArgument(request: TwinningRequest, id: number, response: TwinningResponse) {
+        console.log('wowzers');
     }
 }
