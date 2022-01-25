@@ -12,48 +12,51 @@ import { pipeRequestsTrough, pipeResponseTrough } from "../Server/Build";
 import TwinningResponse from "./TwinningResponse";
 import ResponsePipeline from "./Pipelines/ResponsePipeline";
 import { Reader } from "./Injector/Reader";
+import Tomestone from "./Tomestone/Tomestone";
+import InjectorStorage from "./Injector/InjectorStorage";
 
 export default class Twinning {
-
 
     public static run(port: number) {
         const twinning = new this();
         twinning.buildDependencyInjection();
+        Tomestone.bootDriver();
         twinning.createServer(port);
         twinning.announceReady();
     }
 
-
     private createServer(port: number) {
         const twinning = this;
         HTTP.createServer(function (rawRequest: IncomingMessage, rawResponse: ServerResponse) {
-            TwinningRequest.fromHttp(rawRequest).then((twinningRequest) => {
-                twinning.handleRequest(twinningRequest);
-                twinning.handleResponse(twinningRequest, rawResponse);
+            TwinningRequest.fromHttp(rawRequest).then(async (twinningRequest) => {
+                await twinning.handleRequest(twinningRequest);
+                await twinning.handleResponse(twinningRequest, rawResponse);
             });
         }).listen(port);
     };
 
-    private handleRequest(tr: TwinningRequest): void
+    private async handleRequest(tr: TwinningRequest)
     {
         const pipeline = new RequestPipeline(tr);
         for (const pipe of pipeRequestsTrough) {
             pipeline.extend(pipe);
         }
-        pipeline.run();
+        await pipeline.run();
+        Promise.resolve();
     }
 
 
-    private handleResponse(twinningRequest: TwinningRequest, rawResponse: ServerResponse): void
+    private async handleResponse(twinningRequest: TwinningRequest, rawResponse: ServerResponse)
     {
-        TwinningResponse.fromHttp(rawResponse).then(twinningResponse => {
+        TwinningResponse.fromHttp(rawResponse).then(async twinningResponse => {
             twinningResponse.consumeRequest(twinningRequest);
             const pipeline = new ResponsePipeline(twinningResponse);
             pipeline.addContext(twinningRequest);
             for (const pipe of pipeResponseTrough) {
                 pipeline.extend(pipe);
             }
-            pipeline.run();
+            await pipeline.run();
+            Promise.resolve();
         });
     }
 
@@ -73,10 +76,6 @@ export default class Twinning {
             const reader = new Reader(file);
             reader.parse();
         }
-    }
-
-    private loadDependencies() {
-        
     }
 
     private getFiles(dir: string): string[]

@@ -9,14 +9,22 @@ class InjectorStorage {
         }
     }
 
-    public addMethod(controller: string, method: string, props: Arguments[]) {
-        this.controllers[this.stripName(controller)][method.trim()] = props;
+    public addMethod(controller: string, method: string, props: Arguments[], isAsync: boolean) {
+        this.controllers[this.stripName(controller)][method.trim()] = {
+            arguments: props,
+            isAsync
+        };
+    }
+
+    public isAsync(controller: string, method: string): boolean 
+    {
+        return this.controllers[controller][method].isAsync
     }
 
     public getDependencies(controller: string, method: string): Arguments[] {
         const recordedController = this.controllers[this.stripName(controller)] ?? null;
         if (recordedController === null) {return []}
-        return recordedController[method] ?? [];
+        return recordedController[method].arguments ?? [];
     }
 
     public pushDependency(className: string, value: any): void 
@@ -38,7 +46,7 @@ class InjectorStorage {
 
 
 type Controller = {
-    [method: string]: Arguments[];
+    [method: string]: {isAsync: boolean, arguments: Arguments[]};
 }
 
 type Arguments = {

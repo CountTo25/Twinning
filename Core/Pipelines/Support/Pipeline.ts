@@ -10,13 +10,17 @@ export default abstract class Pipeline<Subject> {
         this.members.push(by);
     }
 
-    public run(): void
+    public async run(): Promise<any>
     {
-        for (const pipe of this.members) {
-            pipe(this.subject);
-        }
+        await new Promise(async (r, rj) => {
+            for (const pipe of this.members) {
+                await pipe(this.subject);
+            }
+            r(null);
+        })
+        console.log('pipe done'+this.constructor.name);
     }
 }
 
 
-type Pipe<Subject> = (subject: Subject) => void;
+type Pipe<Subject> = (subject: Subject) => Promise<any>;

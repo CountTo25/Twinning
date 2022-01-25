@@ -2,6 +2,7 @@ import Controller from "../Core/Controller";
 import { TwinningWelcome } from "../Core/Misc/TwinningWelcome";
 import TwinningRequest from "../Core/TwinningRequest";
 import TwinningResponse from "../Core/TwinningResponse";
+import Post from "../Models/Post.model";
 
 export default class Hello extends Controller {
     public sayHi() {
@@ -22,5 +23,10 @@ export default class Hello extends Controller {
 
     public withArgument(request: TwinningRequest, id: number, response: TwinningResponse) {
         console.log('wowzers');
+    }
+
+    public async allPosts() {
+        const posts = await Post.all();
+        return posts;
     }
 }

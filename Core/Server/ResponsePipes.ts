@@ -1,11 +1,16 @@
 import InjectorStorage from "../Injector/InjectorStorage";
 import { json } from "../Responder";
 import Router from "../Router/Router";
+import Tomestone from "../Tomestone/Tomestone";
 import TwinningRequest from "../TwinningRequest";
 import TwinningResponse from "../TwinningResponse"
 
-export const end = (tr: TwinningResponse) => tr.end() 
-export const executeAction = (tr: TwinningResponse) => {
+export const end = async (tr: TwinningResponse) => {
+    tr.end();
+    Promise.resolve();
+}
+export const executeAction = async (tr: TwinningResponse) => {
+    console.log('executeAction');
     //@ts-ignore
     const request: TwinningRequest = tr.__request;
     if (request.route !== null && request.route.controller !== null) {
@@ -24,12 +29,21 @@ export const executeAction = (tr: TwinningResponse) => {
             .reduce((acc: {[key: string]: any}, n: any) => {acc[n.name] = n.value; return acc}, {});
         const injected: any[] = args.sort((a,b) => a.id - b.id)
             .map(i => InjectorStorage.getDependency(i.class) ?? natives[i.class] ?? extra[i.name] ?? null);
-        //@ts-ignore
-        tr.setResponsePayload(controller[methodName](...injected));
+        const isAsync = InjectorStorage.isAsync(controllerName, methodName);
+        if (isAsync) {
+            //@ts-ignore
+            const res = await controller[methodName](...injected)
+            tr.setResponsePayload(res);
+            Promise.resolve();
+        } else {
+            //@ts-ignore
+            tr.setResponsePayload(controller[methodName](...injected));
+            Promise.resolve();
+        }
     }
 }
 
-export const setContent = (tr: TwinningResponse) => {
+export const setContent = async (tr: TwinningResponse) => {
     const map: {[key: string]: Function} = {
         'object': json,
         'array': json,
@@ -37,7 +51,10 @@ export const setContent = (tr: TwinningResponse) => {
         'null': () => {},
     }
 
-    const type = typeof tr.getResponsePayload();
+    const payload = tr.getResponsePayload();
+    Tomestone.stripModelData(payload);
+    const type = typeof payload;
     //@ts-ignore
-    map[type](tr.__vanilla, tr.getResponsePayload());
+    map[type](tr.__vanilla, payload);
+    Promise.resolve();
 }
