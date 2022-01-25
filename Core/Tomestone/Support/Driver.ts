@@ -1,3 +1,5 @@
+import RequestInstance from "./RequestInstance";
+
 export default class Driver {
     constructor(
         protected address: string,
@@ -9,7 +11,6 @@ export default class Driver {
         this.init();
     }
     public init() {}
-    public select(fields: string|string[] = '*'): this {return this}
-    public from(table: string): this {return this}
-    public async finish(): Promise<object[]> {return []}
+    public instance(): RequestInstance {return new RequestInstance}
+
 }

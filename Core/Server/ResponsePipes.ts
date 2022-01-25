@@ -10,7 +10,6 @@ export const end = async (tr: TwinningResponse) => {
     Promise.resolve();
 }
 export const executeAction = async (tr: TwinningResponse) => {
-    console.log('executeAction');
     //@ts-ignore
     const request: TwinningRequest = tr.__request;
     if (request.route !== null && request.route.controller !== null) {

@@ -15,6 +15,7 @@ export default class TomestoneWorker {
 
     public async all(): Promise<object[]>
     {
-        return await this.driver.select().from(this.table).finish();
+        return await this.driver.instance()
+            .select().from(this.table).finish();
     }
 }

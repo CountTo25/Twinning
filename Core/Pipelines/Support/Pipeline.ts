@@ -18,7 +18,6 @@ export default abstract class Pipeline<Subject> {
             }
             r(null);
         })
-        console.log('pipe done'+this.constructor.name);
     }
 }
 

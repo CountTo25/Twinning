@@ -1,5 +1,6 @@
 import mysql2 from "mysql2";
 import Driver from "../Support/Driver";
+import MysqlRequestInstance from "./MysqlRequestInstance";
 
 export default function mysql(
         address: string, 
@@ -16,6 +17,7 @@ class MysqlDriver extends Driver {
     private connection!: mysql2.Connection;
     private query: string = '';
 
+
     public init() {
         if (!(this.address.startsWith('http://') || this.address.startsWith('https://'))) {
             this.address = 'http://'+this.address;
@@ -29,28 +31,8 @@ class MysqlDriver extends Driver {
         });
     }
 
-    public select(fields: string[]|string = '*') {
-        this.query+=`SELECT ${fields} `
-        return this;
-    }
-
-    public from(table: string) {
-        this.query+=`FROM ${table} `;
-        return this;
-    }
-
-
-
-    public async finish(): Promise<object[]>
+    public instance(): MysqlRequestInstance
     {
-        return new Promise((resolve, reject) => {
-            const res = this.connection.execute(this.query, function(e,r,f) {
-                if (e === null) {
-                    //@ts-ignore
-                    const response: object[] = r;
-                    resolve(response);
-                }
-            });
-        })
+        return new MysqlRequestInstance().setConnection(this.connection);
     }
 }
