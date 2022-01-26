@@ -54,7 +54,6 @@ class Tomestone {
         const lines = Parser.parse('Models', filename);
         let accumulated = {};
         const className = this.findClassName(lines);
-        console.log(className);
         for (const line of lines) {
             const entry = this.inspectModelLine(line);
             if (entry === null) {continue}
@@ -63,7 +62,6 @@ class Tomestone {
         const columns = this.getColumnsFromDefinitions(accumulated);
         const relations = {}//this.getRelationFromDefinitions(accumulated);
         this.parsed[className] = {columns, relations};
-        console.log(this.parsed);
     }
 
     private inspectModelLine(line: string)
