@@ -7,7 +7,7 @@ export class Reader {
     ) {}
 
     public parse() {
-        const buffer =fs.readFileSync('./Controllers/'+this.filename);
+        const buffer = fs.readFileSync('./Controllers/'+this.filename);
         const lines = buffer.toString().split(/\r?\n/);
         this.findMethods(lines);
     }

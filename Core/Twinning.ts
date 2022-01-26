@@ -20,6 +20,7 @@ export default class Twinning {
     public static run(port: number) {
         const twinning = new this();
         twinning.buildDependencyInjection();
+        twinning.buildModelMappings();
         Tomestone.bootDriver();
         twinning.createServer(port);
         twinning.announceReady();
@@ -75,6 +76,17 @@ export default class Twinning {
         for (const file of all) {
             const reader = new Reader(file);
             reader.parse();
+        }
+    }
+
+    private buildModelMappings() {
+        const dir = "./Models";
+        const all = this.getFiles(dir).filter(f => f.includes('.model.ts')).map(f => {
+            const s = f.split('/');
+            return s[s.length - 1];
+        });
+        for (const file of all) {
+            Tomestone.recordFile(file);
         }
     }
 

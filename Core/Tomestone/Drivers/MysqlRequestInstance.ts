@@ -11,6 +11,9 @@ export default class MysqlRequestInstance extends RequestInstance {
     }
 
     public select(fields: string[]|string = '*') {
+        if (Array.isArray(fields)) {
+            fields = fields.join(',');
+        }
         this.query+=`SELECT ${fields} `
         return this;
     }

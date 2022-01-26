@@ -1,3 +1,4 @@
+import Definition from "./Support/Types/Definition";
 import Tomestone from "./Tomestone";
 
 export default class Model {
@@ -14,19 +15,21 @@ export default class Model {
     {
         const models = [];
         const raw = await Tomestone.of(this).all();
+        const def = Tomestone.of(this).define();
         for (const water of raw) {
             const model = new this();
-            model.__hydrate(water)
+            model.__hydrate(def, water)
             models.push(model);
         }
         return models;
     }
 
-    protected __hydrate(raw: object) {
+    protected __hydrate(definition: Definition, raw: object) {
         const keys = Object.keys(raw);
-        for (const prop of keys) {
+        for (const prop of Object.keys(definition.columns)) {
+            const keyToUse = definition.columns[prop] === prop ? prop : definition.columns[prop];
             //@ts-ignore
-            this[prop] = raw[prop];
+            this[prop] = raw[keyToUse];
         }
     }
 }
