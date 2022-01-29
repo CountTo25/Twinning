@@ -14,9 +14,8 @@ class Tomestone {
         this.driver = dbc.driver(dbc.host, dbc.port, dbc.user, dbc.password, dbc.database);
     }
 
-    public of(model: typeof Model): TomestoneWorker {
-        const instance = new model();
-        return new TomestoneWorker(instance, this.driver, this.parsed[instance.constructor.name]);
+    public of(model: Model): TomestoneWorker {
+        return new TomestoneWorker(model, this.driver, this.parsed[model.constructor.name]);
     }
 
 

@@ -27,4 +27,9 @@ export default class TomestoneWorker {
         return await this.driver.instance()
             .select(columns).from(this.table).finish();
     }
+
+    public async create(data: object): Promise<object>
+    {
+        return await this.driver.instance().insert(this.table, data).finish();
+    }
 }

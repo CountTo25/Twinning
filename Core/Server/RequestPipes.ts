@@ -16,7 +16,14 @@ export const findRoute = async (tr: TwinningRequest) => {
 }
 
 export const parseData = async (tr: TwinningRequest) => {
-    let parsed = JSON.parse(tr.__content);
+    const raw = tr.__content;
+    if (raw === '') {
+        //@ts-ignore
+        tr.content = {};
+        Promise.resolve();
+        return;
+    }
+    let parsed = JSON.parse(tr.__content ?? "{}");
     if (Array.isArray(parsed)) {
         parsed = {parsed};
     }

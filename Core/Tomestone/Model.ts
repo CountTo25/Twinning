@@ -11,17 +11,31 @@ export default class Model {
     }
 
 
-    public static async all()
+    public static async all<T extends Model>(this: new() => T): Promise<T[]>
     {
-        const models = [];
-        const raw = await Tomestone.of(this).all();
-        const def = Tomestone.of(this).define();
+        const models: T[] = [];
+        const raw = await Tomestone.of(new this).all();
+        const def = Tomestone.of(new this).define();
         for (const water of raw) {
-            const model = new this();
+            const model = new this() as T;
             model.__hydrate(def, water)
             models.push(model);
         }
         return models;
+    }
+
+    public static async create<T extends Model>(this: new() => T, data: object & Filler<T>): Promise<T>
+    {
+        const n = new this;
+        const def = Tomestone.of(n).define();
+        const reconstructed: {[key: string]: any} = {};
+        for (const inModel of Object.keys(data)) {
+            //@ts-ignore
+            reconstructed[def.columns[inModel]] = data[inModel];
+        }
+        const raw = await Tomestone.of(n).create(reconstructed);
+        n.__hydrate(def, raw);
+        return n;
     }
 
     protected __hydrate(definition: Definition, raw: object) {
@@ -39,4 +53,8 @@ type Overloads = {
     relation: string,
     foreignKey?: string,
     relatedKey?: string,
+}
+
+type Filler<T extends Model> = {
+    [key in keyof Partial<T>]: string|number
 }

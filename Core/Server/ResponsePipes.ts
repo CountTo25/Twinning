@@ -32,11 +32,11 @@ export const executeAction = async (tr: TwinningResponse) => {
         if (isAsync) {
             //@ts-ignore
             const res = await controller[methodName](...injected)
-            tr.setResponsePayload(res);
+            tr.setResponsePayload(res ?? {});
             Promise.resolve();
         } else {
             //@ts-ignore
-            tr.setResponsePayload(controller[methodName](...injected));
+            tr.setResponsePayload(controller[methodName](...injected) ?? {});
             Promise.resolve();
         }
     }
