@@ -1,4 +1,5 @@
 import TrueRoute from "../Route";
+import RouteGroup from "../RouteGroup";
 import Router from "../Router";
 
 export default class Route {
@@ -12,5 +13,10 @@ export default class Route {
         const route = new TrueRoute(path, 'POST');
         Router.pushRoute(route);
         return route;
+    }
+
+    public static group(): RouteGroup
+    {
+        return new RouteGroup;
     }
 }

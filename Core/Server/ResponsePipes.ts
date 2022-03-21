@@ -1,5 +1,5 @@
 import InjectorStorage from "../Injector/InjectorStorage";
-import { json } from "../Responder";
+import { json, object } from "../Responder";
 import Router from "../Router/Router";
 import Tomestone from "../Tomestone/Tomestone";
 import TwinningRequest from "../TwinningRequest";
@@ -29,29 +29,33 @@ export const executeAction = async (tr: TwinningResponse) => {
         const injected: any[] = args.sort((a,b) => a.id - b.id)
             .map(i => InjectorStorage.getDependency(i.class) ?? natives[i.class] ?? extra[i.name] ?? null);
         const isAsync = InjectorStorage.isAsync(controllerName, methodName);
+        if (request.route._middleware.length !== 0) {
+            for (const middleware of request.route._middleware) {
+                middleware(request, tr, ()=>{}, ()=>{});
+            }
+        }
+
         if (isAsync) {
             //@ts-ignore
             const res = await controller[methodName](...injected)
             tr.setResponsePayload(res ?? {});
-            Promise.resolve();
         } else {
             //@ts-ignore
             tr.setResponsePayload(controller[methodName](...injected) ?? {});
-            Promise.resolve();
         }
+
+
+        Promise.resolve();
     }
 }
 
 export const setContent = async (tr: TwinningResponse) => {
     const map: {[key: string]: Function} = {
-        'object': json,
+        'object': object,
         'array': json,
-        'undefined': () => {},
-        'null': () => {},
     }
 
     const payload = tr.getResponsePayload();
-    Tomestone.stripModelData(payload);
     const type = typeof payload;
     //@ts-ignore
     map[type](tr.__vanilla, payload);

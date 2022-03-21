@@ -33,9 +33,11 @@ class Tomestone {
                     this.stripModelData(entry);
                 }
             }
-        } else {
+        } else if (typeof from === 'object' && from !== null) {
             for (const toStrip of strippable) {
-                delete from[toStrip];
+                if (toStrip in from) {
+                    delete from[toStrip];
+                }
             }
 
             const keys = Object.keys(from);
@@ -45,7 +47,6 @@ class Tomestone {
                 }
             }
         }
-
         return from;
     }
 

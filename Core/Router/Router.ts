@@ -1,5 +1,6 @@
 import Route from "./Route";
 import RequestType from "../Types/RequestType";
+import Middleware from "../Middleware/Middleware";
 
 class Router {
 
@@ -10,6 +11,9 @@ class Router {
         'PATCH': {},
         'DELETE': {},
     };
+
+    private prefixStorage: string[] = [];
+    private middlewareStorage: Middleware[] = [];
 
     public catchArguments(route: Route, actual: string) 
     {
@@ -22,6 +26,8 @@ class Router {
 
     public pushRoute(route: Route) {
         route.template = this.cleanupPath(route.template);
+        route.template = this.mixInPrefixes(route.template);
+        route._middleware = this.middlewareStorage.slice();
         const key = route.template.split('/').length;
         if (!(key in this.routes[route.requestMethod])) {
             this.routes[route.requestMethod][key] = {};
@@ -60,6 +66,30 @@ class Router {
             path = path.slice(0, path.length - 1);
         }
         return path
+    }
+
+    public addPrefix(prefix: string): void {
+        this.prefixStorage.push(prefix);
+    }
+
+    public addMiddleware(mw: Middleware[]): void {
+        this.middlewareStorage = this.middlewareStorage.concat(mw.filter(mwe => !this.middlewareStorage.includes(mwe)));
+    }
+
+    public removePrefix(prefix: string) {
+        this.prefixStorage = this.prefixStorage.filter(p => p !== prefix);
+    }
+
+    public removeMiddleware(mw: Middleware[]) {
+        this.middlewareStorage = this.middlewareStorage.filter(mwe => !mw.includes(mwe));
+    }
+
+    private mixInPrefixes(path: string): string 
+    {
+        for (const prefix of this.prefixStorage) {
+            path = prefix + '/' + path;
+        }
+        return path;
     }
 }
 

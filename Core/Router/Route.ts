@@ -1,5 +1,7 @@
 import Controller from "../Controller";
+import Middleware from "../Middleware/Middleware";
 import RequestType from "../Types/RequestType"
+import View from "../Views/View";
 
 export default class Route {
     public template: string = '';
@@ -7,11 +9,26 @@ export default class Route {
 
     private _controller: typeof Controller | null = null;
     private methodName: string = '';
+    public _middleware: Middleware[] = [];
+    private _view: typeof View | null = null;
+
+
 
 
     constructor(route: string, method: RequestType) {
         this.template = route;
         this.requestMethod = method;
+    }
+
+    public view(view: typeof View): void
+    { //cant chain after this
+        this._view = view;
+    }
+
+    public middleware(mw: Middleware[]|Middleware): this
+    {
+        this._middleware = this._middleware.concat(mw);
+        return this;
     }
 
     public controller(type: typeof Controller): this

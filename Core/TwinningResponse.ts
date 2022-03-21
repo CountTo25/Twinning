@@ -16,11 +16,13 @@ export default class TwinningResponse {
         return Promise.resolve(instance);
     }
 
-    public end() {
+    public end(): void
+    {
         this.__vanilla.end();
     }
 
-    public consumeRequest(tr: TwinningRequest) {
+    public consumeRequest(tr: TwinningRequest): void
+    {
         this.__request = tr;
     }
 

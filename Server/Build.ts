@@ -8,20 +8,20 @@ import { end, executeAction, setContent } from "../Core/Server/ResponsePipes";
 import mysql from "../Core/Tomestone/Drivers/mysql";
 import Driver from "../Core/Tomestone/Support/Driver";
 
+export const microserviceKey: string = ''; //two or more twinning instances can communicate via key. Keep it private
 
 export const pipeRequestsTrough = [
-    bindSessionId, //binds unique ids sessions
+    bindSessionId, //binds unique ids to sessions
     findRoute, //finds routes for this request
     parseData, //shapes raw data into object
     //...and anything you want!
     //or just (t: TwinningRequest) => {whatever you want}
-
 ]
 
 export const pipeResponseTrough = [
-    executeAction,
-    setContent,
-    end, //response ends here
+    executeAction, //run action duh
+    setContent, //set content duh x2
+    end, //response ends here 
 ]
 
 export const databaseConfig: DatabaseConfig = {

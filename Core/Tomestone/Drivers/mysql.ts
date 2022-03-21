@@ -78,8 +78,9 @@ class MysqlRequestInstance extends RequestInstance {
                     //@ts-ignore
                     const response: object[] = r;
                     resolve(response);
+                } else {
+                    console.log(e);
                 }
-                console.log(e);
             });
         })
     }

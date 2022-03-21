@@ -14,6 +14,7 @@ import ResponsePipeline from "./Pipelines/ResponsePipeline";
 import { Reader } from "./Injector/Reader";
 import Tomestone from "./Tomestone/Tomestone";
 import InjectorStorage from "./Injector/InjectorStorage";
+import Joiner from "./Microservice/Joiner";
 
 export default class Twinning {
 
@@ -24,6 +25,10 @@ export default class Twinning {
         Tomestone.bootDriver();
         twinning.createServer(port);
         twinning.announceReady();
+    }
+
+    public static join(port: number) {
+        return new Joiner(port);
     }
 
     private createServer(port: number) {
